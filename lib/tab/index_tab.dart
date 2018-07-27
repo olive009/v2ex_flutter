@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:v2ex_flutter/app_model.dart';
 import 'package:v2ex_flutter/app_view_model.dart';
-import 'package:v2ex_flutter/config.dart';
 import 'package:v2ex_flutter/dto/topic.dart';
 import 'package:v2ex_flutter/tab/base_tab.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
