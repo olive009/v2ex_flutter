@@ -4,6 +4,7 @@ import 'package:v2ex_flutter/app_view_model.dart';
 import 'package:v2ex_flutter/component/rx_widgets.dart';
 import 'package:v2ex_flutter/config.dart';
 import 'package:v2ex_flutter/dto/topic.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:v2ex_flutter/tab/base_tab.dart';
 
 class IndexTab extends BaseTab {
@@ -74,7 +75,17 @@ class _IndexTabState extends State<IndexTab>
     List<Widget> chips = appModel.currentNodeList.map((linkItem) {
       return Padding(
           padding: EdgeInsets.only(left: 10.0, top: 6.0, bottom: 6.0),
-          child: new Chip(label: new Text(linkItem.name)));
+          child: InkWell(
+            child: new Chip(label: new Text(linkItem.name)),
+            onTap: () async {
+              String url = Config.root_url + linkItem.href;
+              if (await canLaunch(url)) {
+                await launch(url, forceWebView: true);
+              } else {
+                throw 'Could not launch $Config.login_url';
+              }
+            },
+          ));
     }).toList();
 
     return new Column(
@@ -101,51 +112,62 @@ class _IndexTabState extends State<IndexTab>
   }
 
   Widget createCard(Topic topic) {
-    return Card(
-      margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        color: Colors.white70,
-        child: new Row(
-          children: <Widget>[
-            new Card(
-              elevation: 0.0,
-              margin: EdgeInsets.all(0.0),
-              child: new Image.network(
-                "https:" + topic.avatar,
-                width: Config.avatarSize,
-                height: Config.avatarSize,
-                fit: BoxFit.fill,
+    return InkWell(
+      onTap: () async {
+        String url = Config.root_url + topic.link;
+        if (await canLaunch(url)) {
+          await launch(url, forceWebView: true);
+        } else {
+          throw 'Could not launch $Config.login_url';
+        }
+      },
+      child: Card(
+        margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          color: Colors.white70,
+          child: new Row(
+            children: <Widget>[
+              new Card(
+                elevation: 0.0,
+                margin: EdgeInsets.all(0.0),
+                child: new Image.network(
+                  "https:" + topic.avatar,
+                  width: Config.avatarSize,
+                  height: Config.avatarSize,
+                  fit: BoxFit.fill,
+                ),
               ),
-            ),
-            new Expanded(
-                child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(
-                      topic.itemTitle ?? "",
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6.0),
-                      child: new Text(topic.replyText),
-                    ),
-                  ]),
-            )),
-            new Center(
-              child: new Container(
-                child: new Text(topic.replyCount ?? "0"),
-                padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
-                decoration: new BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.grey),
-              ),
-            )
-          ],
+              new Expanded(
+                  child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                        topic.itemTitle ?? "",
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6.0),
+                        child: new Text(topic.replyText),
+                      ),
+                    ]),
+              )),
+              new Center(
+                child: new Container(
+                  child: new Text(topic.replyCount ?? "0"),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+                  decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Colors.grey),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

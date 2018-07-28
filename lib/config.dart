@@ -10,6 +10,8 @@ class Config {
 
   static const String appName = "V2EX = way to explore";
   static const String root_url = "https://www.v2ex.com";
+  static const String login_url = "https://www.v2ex.com/signin";
+  static const String search_url = "https://www.google.com/search?q=site:v2ex.com/t%20";
 
   static const String TAB_NAME_INDEX = "主页";
   static const String TAB_NAME_NODE = "节点";

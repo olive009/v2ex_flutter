@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:v2ex_flutter/app_model.dart';
-import 'package:v2ex_flutter/app_view_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:v2ex_flutter/config.dart';
 import 'package:v2ex_flutter/tab/base_tab.dart';
 
@@ -166,7 +165,13 @@ class _UserTabState extends State<UserTab> {
                   ),
                   new RaisedButton(
                     color: Colors.lightGreen,
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (await canLaunch(Config.login_url)) {
+                        await launch(Config.login_url, forceWebView: true);
+                      } else {
+                        throw 'Could not launch $Config.login_url';
+                      }
+                    },
                     child: new Text('登录',
                         style: Theme
                             .of(context)

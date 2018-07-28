@@ -56,7 +56,9 @@ class _AppScaffoldState extends State<AppScaffold> {
         actions: <Widget>[
           new IconButton(
             icon: new Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              _launchURL(Config.search_url);
+            },
             iconSize: 32.0,
           )
         ],
@@ -74,7 +76,9 @@ class _AppScaffoldState extends State<AppScaffold> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton:
-          new FloatingActionButton(child: new Icon(Icons.add), onPressed: null),
+          new FloatingActionButton(child: new Icon(Icons.add), onPressed: (){
+            _launchURL(Config.login_url);
+          }),
       drawer: new Drawer(
         child: ListView(
           children: _buildDrawerNavLink(context),
@@ -90,28 +94,28 @@ class _AppScaffoldState extends State<AppScaffold> {
       title: Text("关于"),
       leading: Icon(Icons.home),
       onTap: () {
-        _launchURL("/about");
+        _launchURL(Config.root_url +"/about");
       },
     ));
     navList.add(new ListTile(
       title: Text("FAQ"),
       leading: Icon(Icons.announcement),
       onTap: () {
-        _launchURL("/faq");
+        _launchURL(Config.root_url +"/faq");
       },
     ));
     navList.add(new ListTile(
       title: Text("API"),
       leading: Icon(Icons.font_download),
       onTap: () {
-        _launchURL("/p/7v9TEc53");
+        _launchURL(Config.root_url +"/p/7v9TEc53");
       },
     ));
     navList.add(new ListTile(
       title: Text("我们的愿景"),
       leading: Icon(Icons.accessibility),
       onTap: () {
-        _launchURL("/mission");
+        _launchURL(Config.root_url +"/mission");
       },
     ));
     navList.add(new ListTile(
@@ -125,23 +129,22 @@ class _AppScaffoldState extends State<AppScaffold> {
       title: Text("鸣谢"),
       leading: Icon(Icons.record_voice_over),
       onTap: () {
-        _launchURL("/advertise/2016.html");
+        _launchURL(Config.root_url +"/advertise/2016.html");
       },
     ));
     navList.add(new ListTile(
       title: Text("实用小工具"),
       leading: Icon(Icons.settings),
       onTap: () {
-        _launchURL("/tools");
+        _launchURL(Config.root_url +"/tools");
       },
     ));
     return navList;
   }
 
   _launchURL(String url) async {
-    String fullUrl = Config.root_url + url;
-    if (await canLaunch(fullUrl)) {
-      await launch(fullUrl, forceWebView: true);
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: true);
     } else {
       throw 'Could not launch $url';
     }
