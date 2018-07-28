@@ -5,10 +5,19 @@ import 'package:v2ex_flutter/dto/topic.dart';
 import 'package:v2ex_flutter/service/app_service.dart';
 
 class AppModel {
+  //IndexTab
   List<LinkItem> tabList;
   List<LinkItem> currentNodeList;
   String currentUrl;
   List<Topic> topicList;
+
+  //NodeTab
+  Map<String,List<LinkItem>> allNodeList;
+
+  //HotTab
+  List<Topic> hotTopicList;
+  List<LinkItem> hotNodeList;
+  List<LinkItem> latestNodeList;
 
   RxCommand<String,String> selectTabCommand;
   RxCommand<AppModel,AppModel> getIndexDataCommand;

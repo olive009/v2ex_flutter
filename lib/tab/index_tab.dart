@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:v2ex_flutter/app_model.dart';
 import 'package:v2ex_flutter/app_view_model.dart';
+import 'package:v2ex_flutter/component/rx_widgets.dart';
+import 'package:v2ex_flutter/config.dart';
 import 'package:v2ex_flutter/dto/topic.dart';
 import 'package:v2ex_flutter/tab/base_tab.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class IndexTab extends BaseTab {
   IndexTab(String tabName) {
@@ -21,27 +22,34 @@ class _IndexTabState extends State<IndexTab>
   TabController _tabController;
   AppModel appModel;
   String currentTabName;
-  bool _inAsyncCall = false;
 
   @override
   Widget build(BuildContext context) {
     appModel = AppViewModel.of(context);
     appModel.getIndexDataCommand.execute(appModel);
-    return new StreamBuilder<AppModel>(
-        stream: appModel.getIndexDataCommand.results,
-        builder: (BuildContext context, AsyncSnapshot<AppModel> snapshot) {
-//          if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            print("loaded");
-            _inAsyncCall = false;
-            return createTabs(appModel);
-//            }
-          } else {
-            return new Center(
-              child: new CircularProgressIndicator(),
-            );
-          }
-        });
+    return new Container(
+      child: getBodyWidget(context),
+      color: Config.backgroundColor,
+    );
+  }
+
+  Widget getBodyWidget(BuildContext context) {
+    return RxCommandBuilder(
+      commandResults: AppViewModel.of(context).getIndexDataCommand,
+      busyBuilder: (context) {
+        return new Center(
+          child: new CircularProgressIndicator(),
+        );
+      },
+      dataBuilder: (context, appModel) {
+        return createTabs(appModel);
+      },
+      placeHolderBuilder: (context) {
+        return new Center(
+          child: new CircularProgressIndicator(),
+        );
+      },
+    );
   }
 
   Widget createTabs(AppModel appModel) {
@@ -69,32 +77,26 @@ class _IndexTabState extends State<IndexTab>
           child: new Chip(label: new Text(linkItem.name)));
     }).toList();
 
-    return ModalProgressHUD(
-      child: new Column(
-        children: <Widget>[
-          new Container(
-            child: tabBar,
-            color: Colors.blueGrey,
+    return new Column(
+      children: <Widget>[
+        new Container(
+          child: tabBar,
+          color: Colors.blueGrey,
+        ),
+        new SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: new Row(
+            children: chips,
           ),
-          new SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: new Row(
-              children: chips,
-            ),
+        ),
+        Expanded(
+          child: ListView(
+            children: appModel.topicList.map((topic) {
+              return createCard(topic);
+            }).toList(),
           ),
-          Expanded(
-            child: ListView(
-              children: appModel.topicList.map((topic) {
-                return createCard(topic);
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-      inAsyncCall: _inAsyncCall,
-      // demo of some additional parameters
-      opacity: 0.5,
-      progressIndicator: CircularProgressIndicator(),
+        ),
+      ],
     );
   }
 
@@ -106,8 +108,15 @@ class _IndexTabState extends State<IndexTab>
         color: Colors.white70,
         child: new Row(
           children: <Widget>[
-            new Image.network(
-              "https:" + topic.avatar,
+            new Card(
+              elevation: 0.0,
+              margin: EdgeInsets.all(0.0),
+              child: new Image.network(
+                "https:" + topic.avatar,
+                width: Config.avatarSize,
+                height: Config.avatarSize,
+                fit: BoxFit.fill,
+              ),
             ),
             new Expanded(
                 child: Padding(
@@ -154,11 +163,7 @@ class _IndexTabState extends State<IndexTab>
     if (currentTabName != changingTab) {
       currentTabName = changingTab;
       appModel.currentUrl = appModel.tabList[_tabController.index].href;
-      print("shit");
-      setState(() {
-        _inAsyncCall = true;
-        appModel.getIndexDataCommand.execute(appModel);
-      });
+      appModel.getIndexDataCommand.execute(appModel);
     }
   }
 }
