@@ -5,6 +5,8 @@ import 'package:v2ex_flutter/app_model.dart';
 import 'package:v2ex_flutter/app_view_model.dart';
 import 'package:v2ex_flutter/component/bottom_tab_item.dart';
 import 'package:v2ex_flutter/config.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:v2ex_flutter/dto/link_item.dart';
 import 'package:v2ex_flutter/tab/base_tab.dart';
 import 'package:v2ex_flutter/tab/hot_tab.dart';
 import 'package:v2ex_flutter/tab/index_tab.dart';
@@ -42,8 +44,11 @@ class _AppScaffoldState extends State<AppScaffold> {
   @override
   Widget build(BuildContext context) {
     if (selectTabSubscription == null) {
-      selectTabSubscription =
-          AppViewModel.of(context).selectTabCommand.results.listen(tabChangeHandler);
+      selectTabSubscription = AppViewModel
+          .of(context)
+          .selectTabCommand
+          .results
+          .listen(tabChangeHandler);
     }
     return new Scaffold(
       appBar: new AppBar(
@@ -72,30 +77,74 @@ class _AppScaffoldState extends State<AppScaffold> {
           new FloatingActionButton(child: new Icon(Icons.add), onPressed: null),
       drawer: new Drawer(
         child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-              child: new Text("This is the Header"),
-            ),
-            ListTile(
-              title: Text("Home"),
-              leading: Icon(Icons.home),
-            ),
-            ListTile(
-              title: Text("Profile"),
-              leading: Icon(Icons.person),
-            ),
-            ListTile(
-              title: Text("Exit"),
-              leading: Icon(Icons.exit_to_app),
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
+          children: _buildDrawerNavLink(context),
         ),
       ),
       body: new Center(child: _buildTabStack()),
     );
+  }
+
+  List<Widget> _buildDrawerNavLink(BuildContext context) {
+    List<Widget> navList = new List();
+    navList.add(new ListTile(
+      title: Text("关于"),
+      leading: Icon(Icons.home),
+      onTap: () {
+        _launchURL("/about");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("FAQ"),
+      leading: Icon(Icons.announcement),
+      onTap: () {
+        _launchURL("/faq");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("API"),
+      leading: Icon(Icons.font_download),
+      onTap: () {
+        _launchURL("/p/7v9TEc53");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("我们的愿景"),
+      leading: Icon(Icons.accessibility),
+      onTap: () {
+        _launchURL("/mission");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("广告投放"),
+      leading: Icon(Icons.monetization_on),
+      onTap: () {
+        _launchURL("/advertise");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("鸣谢"),
+      leading: Icon(Icons.record_voice_over),
+      onTap: () {
+        _launchURL("/advertise/2016.html");
+      },
+    ));
+    navList.add(new ListTile(
+      title: Text("实用小工具"),
+      leading: Icon(Icons.settings),
+      onTap: () {
+        _launchURL("/tools");
+      },
+    ));
+    return navList;
+  }
+
+  _launchURL(String url) async {
+    String fullUrl = Config.root_url + url;
+    if (await canLaunch(fullUrl)) {
+      await launch(fullUrl, forceWebView: true);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   List<Widget> _buildTabs(BuildContext context) {
@@ -103,13 +152,26 @@ class _AppScaffoldState extends State<AppScaffold> {
     //does not need to rebuild every time.
     if (tabList == null) {
       tabList = <Widget>[
-        new BottomTabItem(iconData:Icons.home,name: Config.TAB_NAME_INDEX, appModel: appModel,isSelected: true),
-        new BottomTabItem(iconData:Icons.message,name: Config.TAB_NAME_NODE, appModel: appModel),
+        new BottomTabItem(
+            iconData: Icons.home,
+            name: Config.TAB_NAME_INDEX,
+            appModel: appModel,
+            isSelected: true),
+        new BottomTabItem(
+            iconData: Icons.message,
+            name: Config.TAB_NAME_NODE,
+            appModel: appModel),
         SizedBox(
           width: 32.0,
         ),
-        new BottomTabItem(iconData:Icons.insert_chart,name: Config.TAB_NAME_HOT, appModel: appModel),
-        new BottomTabItem(iconData:Icons.person,name: Config.TAB_NAME_USER, appModel: appModel),
+        new BottomTabItem(
+            iconData: Icons.insert_chart,
+            name: Config.TAB_NAME_HOT,
+            appModel: appModel),
+        new BottomTabItem(
+            iconData: Icons.person,
+            name: Config.TAB_NAME_USER,
+            appModel: appModel),
       ];
     }
     return tabList;

@@ -19,6 +19,9 @@ class AppModel {
   List<LinkItem> hotNodeList;
   List<LinkItem> latestNodeList;
 
+  //Drawer
+  List<LinkItem> bottomLinkList;
+
   RxCommand<String,String> selectTabCommand;
   RxCommand<AppModel,AppModel> getIndexDataCommand;
   AppModel() {

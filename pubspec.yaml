@@ -16,6 +16,7 @@ dependencies:
   rxdart: ^0.18.0
   rx_command: ^2.0.3
   intl: ^0.15.6
+  url_launcher: ^3.0.3
 
 dev_dependencies:
   build_runner: ^0.8.0

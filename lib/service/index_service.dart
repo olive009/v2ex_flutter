@@ -93,13 +93,18 @@ Future<AppModel> getIndexData(AppModel appModel) async {
 
     //获取“最热节点”
     if (appModel.hotNodeList == null) {
-    appModel.hotNodeList = getHotNodeList(document);
+      appModel.hotNodeList = getHotNodeList(document);
     }
 
     //获取“最近新增节点”
-//    if (appModel.latestNodeList == null) {
+    if (appModel.latestNodeList == null) {
       appModel.latestNodeList = getLatestNodeList(document);
-//    }
+    }
+
+    //获取“最近新增节点”
+    if (appModel.bottomLinkList == null) {
+      appModel.bottomLinkList = getBottomLinkList(document);
+    }
 
     appModel.currentNodeList = currentNodeList;
     appModel.topicList = topicList;
@@ -183,6 +188,7 @@ List<LinkItem> getHotNodeList(document) {
   }
   return hotNodeList;
 }
+
 List<LinkItem> getLatestNodeList(document) {
   List<LinkItem> latestNodeList = new List();
   List<dom.Element> boxDivList = document.getElementsByClassName('box');
@@ -205,6 +211,18 @@ List<LinkItem> getLatestNodeList(document) {
     }
   }
   return latestNodeList;
+}
+
+List<LinkItem> getBottomLinkList(document) {
+  List<LinkItem> linkList = new List();
+  List<dom.Element> aList = document.getElementsByClassName('dark');
+  for (dom.Element aElement in aList) {
+    LinkItem linkItem = new LinkItem();
+    linkItem.name = aElement.innerHtml;
+    linkItem.href = aElement.attributes['href'];
+    linkList.add(linkItem);
+  }
+  return linkList;
 }
 
 LinkItem getLinkItemFromElement(dom.Element element) {
